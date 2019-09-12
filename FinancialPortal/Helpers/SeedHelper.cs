@@ -85,6 +85,7 @@ namespace FinancialPortal.Helpers
                     DisplayName = "ToriFaircloth"
 
                 }, "Abc123!");
+
             }
             if (!dbContext.Users.Any(u => u.Email == "DemoMember@mailinator.com"))
             {
@@ -97,6 +98,8 @@ namespace FinancialPortal.Helpers
                     DisplayName = "BentleyBoyles"
 
                 }, "Abc123!");
+
+               
             }
             if (!dbContext.Users.Any(u => u.Email == "DemoLobbyist@mailinator.com"))
             {
@@ -152,6 +155,13 @@ namespace FinancialPortal.Helpers
                         Established = DateTime.Now
                     });
 
+            dbContext.SaveChanges();
+
+            var HoH = userManager.FindByEmail("DemoMember@mailinator.com");
+            HoH.HouseholdId = dbContext.Households.Where(h => h.Name == "Seeded House").FirstOrDefault().Id;
+
+            var member = userManager.FindByEmail("DemoHoH@mailinator.com");
+            member.HouseholdId = dbContext.Households.Where(h => h.Name == "Seeded House").FirstOrDefault().Id;
 
             dbContext.SaveChanges();
         }
@@ -189,12 +199,12 @@ namespace FinancialPortal.Helpers
 
             dbContext.Budgets.AddOrUpdate(
                 b =>b.Name,
-                new Budget { HouseHoldId = houseId, Name = "Utilities", Target = 800, Actual = 750, Created = DateTime.Now, },
-                new Budget { HouseHoldId = houseId, Name = "Entertainment", Target = 150, Actual = 30, Created = DateTime.Now, },
-                new Budget { HouseHoldId = houseId, Name = "Groceries", Target = 200, Actual = 225, Created = DateTime.Now, },
-                new Budget { HouseHoldId = houseId, Name = "House", Target = 1200, Actual = 1000, Created = DateTime.Now, },
-                new Budget { HouseHoldId = houseId, Name = "Miscellaneous", Target = 800, Actual = 750, Created = DateTime.Now, },
-                new Budget { HouseHoldId = houseId, Name = "VehicleMaintenance", Target = 200, Actual = 110, Created = DateTime.Now, });
+                new Budget { HouseholdId = houseId, Name = "Utilities", Target = 800, Actual = 750, Created = DateTime.Now, },
+                new Budget { HouseholdId = houseId, Name = "Entertainment", Target = 150, Actual = 30, Created = DateTime.Now, },
+                new Budget { HouseholdId = houseId, Name = "Groceries", Target = 200, Actual = 225, Created = DateTime.Now, },
+                new Budget { HouseholdId = houseId, Name = "House", Target = 1200, Actual = 1000, Created = DateTime.Now, },
+                new Budget { HouseholdId = houseId, Name = "Miscellaneous", Target = 800, Actual = 750, Created = DateTime.Now, },
+                new Budget { HouseholdId = houseId, Name = "VehicleMaintenance", Target = 200, Actual = 110, Created = DateTime.Now, });
 
             dbContext.SaveChanges();
 

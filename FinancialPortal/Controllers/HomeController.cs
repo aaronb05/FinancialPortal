@@ -1,13 +1,22 @@
-﻿using System;
+﻿using FinancialPortal.Models;
+using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using FinancialPortal.ViewModels;
+using FinancialPortal.Helpers;
+
 
 namespace FinancialPortal.Controllers
 {
+
     public class HomeController : Controller
     {
+        private ApplicationDbContext db = new ApplicationDbContext();
+        private RoleHelper roleHelper = new RoleHelper();
+
         public ActionResult Index()
         {
             return View();
@@ -26,5 +35,65 @@ namespace FinancialPortal.Controllers
 
             return View();
         }
+
+        public ActionResult LandingPage()
+        {
+
+            return View();
+        }
+        public ActionResult Login()
+        {
+
+            return View();
+        }
+        public ActionResult Register()
+        {
+
+            return View();
+        }
+        public ActionResult Lobby()
+        {
+            ViewBag.AccountTypeId = new SelectList(db.AccountTypes, "Id", "Type");
+            return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Wizard(Household household, BankAccount account, Budget budget, BudgetItem budgetItem)
+        {
+            var userId = User.Identity.GetUserId();
+
+            if (ModelState.IsValid)
+            {
+                household.OwnerId = userId;
+                household.Established = DateTime.Now;
+                db.Households.Add(household);
+
+                var user = db.Users.Find(userId);
+                user.HouseholdId = household.Id;
+                roleHelper.RemoveUserFromRole(userId, "Lobbyist");
+                roleHelper.AddUserToRole(userId, "HeadOfHouse");
+                db.SaveChanges();
+
+                account.HouseholdId = household.Id;
+                account.OwnerId = userId;
+                db.BankAccounts.Add(account);
+
+                budget.HouseholdId = household.Id;
+                db.Budgets.Add(budget);
+                db.SaveChanges();
+
+                budgetItem.BudgetId = budget.Id;
+                db.BudgetItems.Add(budgetItem);
+                db.SaveChanges();
+
+                return RedirectToAction("Dashboard", "Households");
+            }
+
+            return View("Lobby");
+        }
+
+       
     }
 }

@@ -8,6 +8,7 @@ namespace FinancialPortal.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using System.Diagnostics;
 
     internal sealed class Configuration : DbMigrationsConfiguration<FinancialPortal.Models.ApplicationDbContext>
     {
@@ -24,7 +25,9 @@ namespace FinancialPortal.Migrations
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method
             //  to avoid creating duplicate seed data.
-           
+
+            //if (!Debugger.IsAttached) Debugger.Launch();
+
             seedHelper.SeedRoles();
             seedHelper.SeedUsers();
             seedHelper.AssignRoles();

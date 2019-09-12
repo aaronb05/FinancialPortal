@@ -8,7 +8,7 @@ namespace FinancialPortal.Models
     public class Budget
     {
         public int Id { get; set; }
-        public int HouseHoldId { get; set; }
+        public int HouseholdId { get; set; }
         public string Name { get; set; }
         public Double Target { get; set; }
         public Double Actual { get; set; }
