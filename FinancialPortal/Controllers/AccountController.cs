@@ -11,6 +11,11 @@ using Microsoft.Owin.Security;
 using FinancialPortal.Models;
 using FinancialPortal.Helpers;
 using FinancialPortal.Enumerations;
+using System.Web.Configuration;
+using System.Net.Mail;
+using FinancialPortal.ViewModels;
+using System.IO;
+using static FinancialPortal.EmailService;
 
 namespace FinancialPortal.Controllers
 {
@@ -64,6 +69,27 @@ namespace FinancialPortal.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
+
+        //CHANGE AVATAR
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangeAvatar(HttpPostedFileBase avatar, UserProfileVM model)
+        {
+            var user = db.Users.Find(model.Id);
+
+
+            if (ImageHelper.IsWebFriendlyImage(avatar))
+            {
+                var fileName = Path.GetFileName(avatar.FileName);
+
+                avatar.SaveAs(Path.Combine(Server.MapPath("~/Images/"), fileName));
+                user.AvatarUrl = "/Images/" + fileName;
+            }
+
+            db.SaveChanges();
+            return RedirectToAction("UserProfile", "Home");
+        }
+
 
         //
         // POST: /Account/Login
@@ -143,7 +169,7 @@ namespace FinancialPortal.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            return RedirectToAction("Dashboard","Home");
+            return RedirectToAction("Register","Home");
         }
 
         //
@@ -155,18 +181,27 @@ namespace FinancialPortal.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser
+                {
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    UserName = model.Email,
+                    DisplayName= model.DisplayName
+                    
+                };
+                
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     roleHelper.AddUserToRole(user.Id, "Lobbyist");
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    //Send an email with this link
+                    //string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    //await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
                     return RedirectToAction("Lobby", "Home");
                 }
@@ -208,7 +243,7 @@ namespace FinancialPortal.Controllers
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindByNameAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+                if (user == null)
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
@@ -216,10 +251,23 @@ namespace FinancialPortal.Controllers
 
                 // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
-                // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-                // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+
+                var subject = "Reset Password";
+                var body = "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>";
+                var from = WebConfigurationManager.AppSettings["emailto"];
+                var to = model.Email;
+                var email = new MailMessage(from, to)
+                {
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                };
+                var svc = new PersonalEmail();
+                await svc.SendAsync(email);
+
+
             }
 
             // If we got this far, something failed, redisplay form

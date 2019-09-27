@@ -11,7 +11,6 @@ using FinancialPortal.Helpers;
 
 namespace FinancialPortal.Controllers
 {
-
     public class HomeController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -57,7 +56,6 @@ namespace FinancialPortal.Controllers
             return View();
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Wizard(Household household, BankAccount account, Budget budget, BudgetItem budgetItem)
@@ -78,13 +76,17 @@ namespace FinancialPortal.Controllers
 
                 account.HouseholdId = household.Id;
                 account.OwnerId = userId;
+                account.Created = DateTime.Now;
+                account.AccountTypeId = account.AccountType.Id;
                 db.BankAccounts.Add(account);
 
                 budget.HouseholdId = household.Id;
+                budget.Created = DateTime.Now;
                 db.Budgets.Add(budget);
                 db.SaveChanges();
 
                 budgetItem.BudgetId = budget.Id;
+                budgetItem.Created = DateTime.Now;
                 db.BudgetItems.Add(budgetItem);
                 db.SaveChanges();
 
@@ -93,7 +95,6 @@ namespace FinancialPortal.Controllers
 
             return View("Lobby");
         }
-
        
     }
 }

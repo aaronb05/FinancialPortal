@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPortal.Models;
+using Microsoft.AspNet.Identity;
 
 namespace FinancialPortal.Controllers
 {
@@ -39,7 +40,10 @@ namespace FinancialPortal.Controllers
         // GET: BudgetItems/Create
         public ActionResult Create()
         {
-            ViewBag.BudgetId = new SelectList(db.Budgets, "Id", "Name");
+            var userId = User.Identity.GetUserId();
+            var houseId = db.Users.Find(userId).HouseholdId;
+            var mybudget = db.Budgets.Where(b => b.HouseholdId == houseId);
+            ViewBag.BudgetId = new SelectList(mybudget, "Id", "Name");
             return View();
         }
 
@@ -52,11 +56,16 @@ namespace FinancialPortal.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userId = User.Identity.GetUserId();
+                var user = db.Users.Find(userId);
+
+                budgetItem.Created = DateTime.Now;
+                
                 db.BudgetItems.Add(budgetItem);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
+            var budgets = db.Budgets.Where(b => b.HouseholdId == budgetItem.Budget.HouseholdId).ToList();
             ViewBag.BudgetId = new SelectList(db.Budgets, "Id", "Name", budgetItem.BudgetId);
             return View(budgetItem);
         }

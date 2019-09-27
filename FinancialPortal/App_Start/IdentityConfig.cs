@@ -11,18 +11,88 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using FinancialPortal.Models;
+using System.Net.Mail;
+using System.Web.Configuration;
+using System.Net;
 
 namespace FinancialPortal
 {
-    public class EmailService : IIdentityMessageService
+
+    public class PersonalEmail
     {
-        public Task SendAsync(IdentityMessage message)
+        public async Task SendAsync(MailMessage message)
         {
-            // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+            var GmailUsername = WebConfigurationManager.AppSettings["username"];
+            var GmailPassword = WebConfigurationManager.AppSettings["password"];
+            var host = WebConfigurationManager.AppSettings["host"];
+            int port = Convert.ToInt32(WebConfigurationManager.AppSettings["port"]);
+
+            using (var smtp = new SmtpClient()
+            {
+                Host = host,
+                Port = port,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(GmailUsername, GmailPassword)
+            })
+            {
+                try
+                {
+                    await smtp.SendMailAsync(message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    await Task.FromResult(0);
+                }
+            };
+
         }
     }
 
+    public class EmailService : IIdentityMessageService
+    {
+        public async Task SendAsync(IdentityMessage message)
+        {
+            await SendMailAsync(message);
+        }
+        public async Task<bool> SendMailAsync(IdentityMessage message)
+        {
+            var GmailUsername = WebConfigurationManager.AppSettings["username"];
+            var GmailPassword = WebConfigurationManager.AppSettings["password"];
+            var host = WebConfigurationManager.AppSettings["host"];
+            int port = Convert.ToInt32(WebConfigurationManager.AppSettings["port"]);
+            var from = new MailAddress(WebConfigurationManager.AppSettings["emailfrom"], "FinancialPortal");
+            var email = new MailMessage(from, new MailAddress(message.Destination))
+            {
+                Subject = message.Subject,
+                Body = message.Body,
+                IsBodyHtml = true,
+            };
+            using (var smtp = new SmtpClient()
+            {
+                Host = host,
+                Port = port,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(GmailUsername, GmailPassword)
+            })
+            {
+                try
+                {
+                    await smtp.SendMailAsync(email);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            };
+
+        }
+    }
     public class SmsService : IIdentityMessageService
     {
         public Task SendAsync(IdentityMessage message)

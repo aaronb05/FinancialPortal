@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPortal.Models;
+using Microsoft.AspNet.Identity;
 
 namespace FinancialPortal.Controllers
 {
@@ -39,9 +40,13 @@ namespace FinancialPortal.Controllers
         // GET: Transactions/Create
         public ActionResult Create()
         {
-            ViewBag.BankAccountId = new SelectList(db.BankAccounts, "Id", "OwnerId");
+            var userId = User.Identity.GetUserId();
+            var houseId = db.Users.Find(userId).HouseholdId;
+            var myAccounts = db.BankAccounts.Where(b => b.HouseholdId == houseId).ToList();
+            //var myItems = db.BudgetItems.Where(b => b.HouseholdId == houseId).ToList();
+            ViewBag.BankAccountId = new SelectList(myAccounts, "Id", "Name");
             ViewBag.BudgetItemId = new SelectList(db.BudgetItems, "Id", "Name");
-            ViewBag.OwnerId = new SelectList(db.Users, "Id", "FirstName");
+           
             ViewBag.TransactionTypeId = new SelectList(db.TransactionTypes, "Id", "Name");
             return View();
         }
@@ -51,10 +56,13 @@ namespace FinancialPortal.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,BankAccountId,TransactionTypeId,BudgetItemId,OwnerId,Description,Amount,Memo,Created,Updated")] Transaction transaction)
+        public ActionResult Create([Bind(Include = "Id,BankAccountId,TransactionTypeId,BudgetItemId,Description,Amount,Memo")] Transaction transaction)
         {
             if (ModelState.IsValid)
             {
+                transaction.Created = DateTime.Now;
+                transaction.OwnerId = User.Identity.GetUserId();
+
                 db.Transactions.Add(transaction);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -62,7 +70,7 @@ namespace FinancialPortal.Controllers
 
             ViewBag.BankAccountId = new SelectList(db.BankAccounts, "Id", "OwnerId", transaction.BankAccountId);
             ViewBag.BudgetItemId = new SelectList(db.BudgetItems, "Id", "Name", transaction.BudgetItemId);
-            ViewBag.OwnerId = new SelectList(db.Users, "Id", "FirstName", transaction.OwnerId);
+            
             ViewBag.TransactionTypeId = new SelectList(db.TransactionTypes, "Id", "Name", transaction.TransactionTypeId);
             return View(transaction);
         }

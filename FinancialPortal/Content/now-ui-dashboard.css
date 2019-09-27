@@ -573,7 +573,7 @@ fieldset[disabled] .btn-danger.active {
 
 .btn-neutral {
   background-color: #FFFFFF;
-  color: #f96332;
+  color: white;
 }
 
 .btn-neutral:hover,
@@ -648,7 +648,7 @@ fieldset[disabled] .btn-neutral.active {
 }
 
 .btn-neutral.btn-warning {
-  color: #FFB236;
+  color: black;
 }
 
 .btn-neutral.btn-warning:hover,
@@ -696,7 +696,7 @@ fieldset[disabled] .btn-neutral.active {
 
 .btn-neutral:hover,
 .btn-neutral:focus {
-  color: #fa7a50;
+  color: #FFFFFF;
 }
 
 .btn-neutral:hover:not(.nav-link),
@@ -7084,15 +7084,15 @@ Created using IcoMoon - icomoon.io
 }
 
 .panel-header {
-  height: 260px;
-  padding-top: 80px;
-  padding-bottom: 45px;
-  background: #141E30;
-  /* fallback for old browsers */
-  background: -webkit-gradient(linear, left top, right top, from(#0c2646), color-stop(60%, #204065), to(#2a5788));
-  background: linear-gradient(to right, #0c2646 0%, #204065 60%, #2a5788 100%);
-  position: relative;
-  overflow: hidden;
+    height: 260px;
+    padding-top: 80px;
+    padding-bottom: 45px;
+    background: #141E30;
+    /* fallback for old browsers */
+    background: -webkit-gradient(linear, left top, right top, from(#0c2646), color-stop(60%, #204065), to(#2a5788));
+    background: linear-gradient(to right, #094407 0%, #179216 60%, #18ce0f 100%);
+    position: relative;
+    overflow: hidden;
 }
 
 .panel-header .header .title {

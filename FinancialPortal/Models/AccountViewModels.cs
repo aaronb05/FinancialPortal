@@ -66,22 +66,20 @@ namespace FinancialPortal.Models
     {
 
         [Required]
-        [EmailAddress]
-        [Display(Name = "First Name")]
+        [Display(Name = "FirstName")]
         public string FirstName { get; set; }
 
         [Required]
-        [EmailAddress]
-        [Display(Name = "Last Name")]
+        [Display(Name = "LastName")]
         public string LastName { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-       
-        [EmailAddress]
-        [Display(Name = "Display Name")]
+        
+        [Display(Name = "DisplayName")]
         public string DisplayName { get; set; }
 
         [Required]
@@ -91,7 +89,7 @@ namespace FinancialPortal.Models
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
+        [Display(Name = "ConfirmPassword")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
@@ -110,7 +108,7 @@ namespace FinancialPortal.Models
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
+        [Display(Name = "ConfirmPassword")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 

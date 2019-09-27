@@ -3,6 +3,8 @@
     Layout = null;
 }
 
+@model FinancialPortal.Models.RegisterViewModel
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,7 +29,7 @@
     <link href="~/Content/demo.css" rel="stylesheet" />
 </head>
 <body class="register-page sidebar-mini ">
-   
+
     <div class="wrapper wrapper-full-page ">
         <div class="full-page register-page section-image" filter-color="black" style="background-image: url('../../Images/bg5.jpg');">
             <div class="content">
@@ -35,7 +37,7 @@
                     <div class="row">
                         <div class="col-md-5 ml-auto">
                             <div class="info-area info-horizontal mt-5">
-                               
+
                                 <div class="description">
                                     <h5 class="info-title">Marketing</h5>
                                     <p class="description">
@@ -44,7 +46,7 @@
                                 </div>
                             </div>
                             <div class="info-area info-horizontal">
-                               
+
                                 <div class="description">
                                     <h5 class="info-title">Fully Coded in HTML5</h5>
                                     <p class="description">
@@ -53,7 +55,7 @@
                                 </div>
                             </div>
                             <div class="info-area info-horizontal">
-                                
+
                                 <div class="description">
                                     <h5 class="info-title">Built Audience</h5>
                                     <p class="description">
@@ -81,28 +83,32 @@
                                 </div>
                                 @using (Html.BeginForm("Register", "Account", FormMethod.Post))
                                 {
+                                    @Html.AntiForgeryToken()
                                     <div class="card-body ">
                                         <div class="input-group">
-                                           
-                                            <input type="text" name="FirstName" class="form-control" placeholder="First Name">
+                                            <input type="text" class="form-control" name="FirstName" placeholder="First Name">
+
                                         </div>
                                         <div class="input-group">
-                                           
-                                            <input type="text" name="LastName" placeholder="Last Name" class="form-control">
+                                            <input type="text" name="LastName" class="form-control" placeholder="LastName">
+
                                         </div>
                                         <div class="input-group">
-                                            
-                                            <input type="email" name="Email" class="form-control" placeholder="Email">
+                                            <input type="email" class="form-control" name="Email" placeholder="Email">
+
                                         </div>
                                         <div class="input-group">
-                                           
                                             <input type="password" name="Password" class="form-control" placeholder="Password">
+
                                         </div>
                                         <div class="input-group">
-                                           
                                             <input type="password" name="ConfirmPassword" class="form-control" placeholder="Confirm Password">
+
                                         </div>
-                                           
+                                        <div class="input-group">
+                                            <input type="text" name ="DisplayName"class="form-control" placeholder="Display Name">
+
+                                        </div>
                                         <div class="card-footer ">
                                             <div>
                                                 <button type="submit" class="btn btn-primary btn-round btn-lg">Get Started</button>
@@ -132,25 +138,24 @@
     <script src="~/Scripts/sweetalert2.min.js"></script>
     <!-- Forms Validations Plugin -->
     <script src="~/Scripts/jquery.validate.min.js"></script>
-   
+
 
     <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
     <script src="~/Scripts/bootstrap-selectpicker.js"></script>
     <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
-   <script src="~/Scripts/bootstrap-tagsinput.js"></script>
+    <script src="~/Scripts/bootstrap-tagsinput.js"></script>
     <!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
     <script src="~/Scripts/jasny-bootstrap.min.js"></script>
     <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
-   
     <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
     <script src="~/Scripts/nouislider.min.js"></script>
     <!--  Google Maps Plugin    -->
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
     <!-- Chart JS -->
-    
+
     <script src="~/Scripts/now-ui-dashboard.js"></script>
     <!-- Now Ui Dashboard DEMO methods, don't include it in your project! -->
-  
+
     <script src="~/Scripts/Demo.js"></script>
     <script>
         $(document).ready(function () {

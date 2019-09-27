@@ -12,7 +12,5 @@ namespace FinancialPortal.ViewModels
         public BankAccount BankAccount = new BankAccount();
         public Budget Budget = new Budget();
         public BudgetItem BudgetItem = new BudgetItem();
-        public AccountType AccountType = new AccountType();
-
     }
 }

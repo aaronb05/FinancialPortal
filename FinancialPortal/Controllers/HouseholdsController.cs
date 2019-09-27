@@ -28,17 +28,14 @@ namespace FinancialPortal.Controllers
 
         public ActionResult Dashboard()
         {
-            var user = db.Users.Find(User.Identity.GetUserId());
 
-            if (user.Household== null)
-            {
-                return RedirectToAction("Lobby", "Home");
-            }
-            else
-            {
-                return View();
-            }
-            
+            return View();
+        }
+
+        public ActionResult UserProfile()
+        {
+
+            return View();
         }
 
 
@@ -69,22 +66,29 @@ namespace FinancialPortal.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,OwnerId,Name,Greeting,Established")] Household household)
+        public ActionResult Create([Bind(Include = "Id,Name,Greeting")] Household household)
         {
             if (ModelState.IsValid)
             {
+                var userId = User.Identity.GetUserId();
+                var user = db.Users.Find(userId);
 
-                
+                household.OwnerId = userId;
+                household.Established = DateTime.Now;
                 db.Households.Add(household);
-                var userId = db.Users.FirstOrDefault(u => u.Id == household.OwnerId).ToString();
+                household.Members.Add(user);
+
+                user.HouseholdId = household.Id;
+
+                roleHelper.RemoveUserFromRole(userId, "Lobbyist");
                 roleHelper.AddUserToRole(userId, "HeadOfHouse");
 
                 db.SaveChanges();
-                return RedirectToAction("DashBoard", "Home");
+                return RedirectToAction("Dashboard", "Households");
             }
 
             ViewBag.OwnerId = new SelectList(db.Users, "Id", "FirstName", household.OwnerId);
-            return View(household);
+            return RedirectToAction("Create","Budgets");
         }
 
         // GET: Households/Edit/5
